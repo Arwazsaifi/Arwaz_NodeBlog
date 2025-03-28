@@ -7,6 +7,6 @@ application.create(config);
 
 application.start();
 
-module.exports = { app };
+module.exports = app ;
 
 
