@@ -5,9 +5,14 @@ async function createBlog(req, res) {
     try {
         const { title, description } = req.body;
         const userId = req.user.userId;
-        const imagePath = req.file ? req.file.path : null; 
+        let blogImageUrl = null;
 
-        const blogData = await blogService.createBlog(userId, title, description, imagePath);
+        if (req.file) {
+            const format = req.file.mimetype.split("/")[1] || "jpg"; 
+            blogImageUrl = await uploadToCloudinary(req.file.buffer, format);
+        }
+
+        const blogData = await blogService.createBlog(userId, title, description, blogImageUrl);
 
         res.status(201).json({
             status: "success",
@@ -15,11 +20,10 @@ async function createBlog(req, res) {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({
-            error: error.message
-        });
+        res.status(500).json({ error: error.message });
     }
 }
+
 
 async function getBlogs(req, res) {
     try {

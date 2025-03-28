@@ -7,12 +7,12 @@ async function registerUser(email, password, profileImage) {
         const existingUser = await User.findOne({ email });
         if (existingUser) throw new Error("Email already in use");
 
-        let profileImageUrl = null;
-        if (profileImage) {
-            profileImageUrl = await uploadToCloudinary(profileImage);
-        }
+        const user = new User({ 
+            email, 
+            password, 
+            profileImage: profileImage || null 
+        });
 
-        const user = new User({ email, password, profileImage: profileImageUrl });
         const savedUser = await user.save();
 
         return {
@@ -23,6 +23,7 @@ async function registerUser(email, password, profileImage) {
         throw new Error(`Error registering user: ${error.message}`);
     }
 }
+
 
 async function loginUser(email, password) {
     try {

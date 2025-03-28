@@ -1,18 +1,12 @@
 const Blog = require("../models/Blog");
 const { uploadToCloudinary } = require("../utils/cloudinary");
 
-async function createBlog(userId, title, description, imagePath) {
+async function createBlog(userId, title, description, blogImageUrl) {
     try {
-        let blogImageUrl = null;
-
-        if (imagePath) {
-            blogImageUrl = await uploadToCloudinary(imagePath);
-        }
-
         const blog = new Blog({
             title,
             description,
-            image: blogImageUrl,
+            image: blogImageUrl || null, 
             createdBy: userId
         });
 

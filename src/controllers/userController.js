@@ -1,27 +1,28 @@
 const userService = require("../services/userService");
 const {uploadToCloudinary} = require('../utils/cloudinary')
+
 async function signup(req, res) {
     try {
         const { email, password } = req.body;
         let profileImageUrl = null;
 
         if (req.file) {
-          profileImageUrl = await uploadToCloudinary(req.file.path);
+            const format = req.file.mimetype.split("/")[1] || "jpg";
+            profileImageUrl = await uploadToCloudinary(req.file.buffer, format);
         }
-    
+
         const data = await userService.registerUser(email, password, profileImageUrl);
 
-        res.status(201).send({
+        res.status(201).json({
             status: "success",
             ...data 
         });
     } catch (error) {
-        console.error(error)
-        res.status(500).json({
-            error: error.message
-        });
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
 }
+
 
 async function login(req, res) {
     try {

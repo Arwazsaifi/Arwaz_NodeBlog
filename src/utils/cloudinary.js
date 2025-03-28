@@ -1,13 +1,16 @@
 const cloudinary = require("../configs/cloudinary");
 
-async function uploadToCloudinary(filePath) {
+async function uploadToCloudinary(fileBuffer, format) {
+  if (!fileBuffer) {
+    throw new Error("File buffer is missing. Please provide a valid file.");
+  }
+
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload(
-      filePath,
-      {
-        folder: "user_profiles",
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { 
+        folder: "user_profiles", 
         resource_type: "image",
-        allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+        format: format || undefined 
       },
       (error, result) => {
         if (error) {
@@ -16,6 +19,8 @@ async function uploadToCloudinary(filePath) {
         resolve(result.secure_url);
       }
     );
+
+    uploadStream.end(fileBuffer);
   });
 }
 
